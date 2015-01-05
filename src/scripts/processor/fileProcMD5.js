@@ -37,7 +37,14 @@
 
                 reader.onload = (function(theFile) {
                     return function(event) {
-                        item.md5 = md5(event.target.result);
+                        var buffer = event.target.result,
+                            bytes = new Uint8Array(buffer),
+                            data = "";
+
+                        for(var i = 0, j = bytes.length;i < j;i++)
+                            data += String.fromCharCode(bytes[i]);
+
+                        item.md5 = md5(data);
                         proc.trigger($fileProcess.EVT.IN_LOAD, item, reader);
                     };
                 })(item.file);
@@ -54,7 +61,7 @@
             _destruct: function() {},
 
             _process: function() {
-                this._reader.readAsBinaryString(this.file);
+                this._reader.readAsArrayBuffer(this.file);
             },
 
             _abort: function() {
